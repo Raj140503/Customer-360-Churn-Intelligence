@@ -86,8 +86,8 @@ def load_data():
         "data/processed/retention_scoring.csv"
     )
 
-    sales = pd.read_csv(
-        "data/processed/sales.csv"
+    monthly_revenue = pd.read_csv(
+    "data/processed/monthly_revenue.csv"
     )
 
     try:
@@ -97,10 +97,10 @@ def load_data():
     except FileNotFoundError:
         model = pd.DataFrame()
 
-    return customer, retention, sales, model
+    return customer, retention, monthly_revenue, model
 
 
-customer, retention, sales, model = load_data()
+customer, retention, monthly_revenue, model = load_data()
 
 
 # =========================================================
@@ -114,11 +114,6 @@ customer["first_purchase_date"] = pd.to_datetime(
 
 customer["last_purchase_date"] = pd.to_datetime(
     customer["last_purchase_date"],
-    errors="coerce"
-)
-
-sales["invoicedate"] = pd.to_datetime(
-    sales["invoicedate"],
     errors="coerce"
 )
 
@@ -257,15 +252,7 @@ if page == "Executive Overview":
 
     # Monthly revenue
 
-    monthly = (
-        sales.assign(
-            month=sales["invoicedate"]
-            .dt.to_period("M")
-            .astype(str)
-        )
-        .groupby("month", as_index=False)["revenue"]
-        .sum()
-    )
+    monthly = monthly_revenue.copy()
 
     fig = px.line(
         monthly,
